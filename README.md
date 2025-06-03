@@ -3,9 +3,11 @@
 ## Names: Amber Tang and Maggie Zhang
 
 ### Introduction
+
 The dataset we chose to analyze was the "Recipes and Ratings" dataset, which included data on various recipes and their ratings from food.com. The data comes from two csv files, one which includes recipes data and the other of which includes the reviews and ratings submitted for each recipe. We wanted to use these datasets to answer the question "Is there a significant relationship between recipe complexity and recipe rating?". We defined complexity as a combination of the variables: (standardized) minutes, number of ingredients and number of steps. To access this data, we first left merged the two datasets on recipe, then calculated the average rating per recipe and added it to the original "recipes" dataframe. Our final dataframe had 83782 rows (meaning 83782 recipes). The columns that we analyzed were "minutes" (Minutes to prepare recipe), "n_steps" (Number of steps in recipe) and "ingredients" (List of ingredients in recipe).
 
 ### Data Cleaning and Exploratory Data Analysis
+
 **Data Cleaning**
 
 The first step we took to clean our data was filling ratings of 0 with np.nan. This is because these 0 ratings are from reviews where the reviewer failed to add a rating. The minimum possible star rating to give a recipe on food.com is a 1 star, and it only displays as 0 stars when a rating is missing. We added the np.nan values instead so the average rating is not incorrectly lowered.
@@ -17,6 +19,7 @@ Additionally, we noticed that there were other columns with a similar list forma
 ![Head](df_head.png)
 
 **Univariate Analysis**
+
 One of the variables we decided to look at was the number of ingredients since we thought it could be a good indicator of complexity. The histogram generated is displayed below:
 <iframe
   src="n_ingredients_distribution.html"
@@ -28,6 +31,7 @@ One of the variables we decided to look at was the number of ingredients since w
 The distribution of the number of ingredients is skewed. For most recipes, the number of ingredients falls around 5-10 ingredients. There are a few outlier swith a maximum of 36 ingredients included.
 
 **Bivariate Analysis**
+
 We continued to analyze our data by examining the relationship between the number of ingredients and the average rating. We created the scatterplot below:
 <iframe
   src="ingredients_vs_rating.html"
@@ -37,7 +41,9 @@ We continued to analyze our data by examining the relationship between the numbe
 ></iframe>
 
 From the scatterplot we can see that most recipes, regardless of ingredient count, receive high average ratings close to 5. However, simpler recipes show a wider range of ratings, including more low-rated outliers. In contrast, recipes with more ingredients tend to receive consistently high ratings, though they are less frequent. This suggests that while simple recipes are popular, more complex ones may be more reliably well-received.
+
 **Interesting Aggregates**
+
 We chose to aggregate our data by the "n_ingredients" column and looked at the count, mean and median values. The pivot table generated is shown below:
 
 |   n_ingredients |   count |    mean |   median |
@@ -80,13 +86,17 @@ We chose to aggregate our data by the "n_ingredients" column and looked at the c
 The pivot table shows that recipes with fewer ingredients are much more common, with the highest counts between 5 and 10 ingredients. Average ratings are generally high across all ingredient counts, with all medians staying at 5.0. An interesting observation is that the recipes with the highest number of ingredients (31-37) received perfect 5 star ratings in all reviews. Overall, there’s no clear link between the number of ingredients and average rating since simpler and more complex recipes both tend to receive high ratings.
 
 ### Assessment of Missingness
+
 **NMAR Analysis**
+
 We believe the avg_rating column in the dataset is NMAR. The missing values occur because some recipes have not been rated by users, and this missingness may depend on unobserved factors such as the recipe’s popularity or visibility on the platform. For example, less appealing or rarely viewed recipes may be less likely to receive ratings. To potentially make this missingness MAR, we could collect additional data such as the number of views, saves, or shares a recipe has, or whether it includes a photo or tags—factors that might influence whether a user rates a recipe.
 
 **Missingness Dependency**
+
 TO BE WRITTEN
 
 ### Hypothesis Testing
+
 **Null Hypothesis:** There is no relationship for recipes tagged with the 'easy' tag and its average rating.
 
 **Alternate Hypothesis:** Recipes tagged with the 'easy' tag have higher average ratings.
@@ -104,10 +114,12 @@ ADD MORE ON TESTING PROCEDURE + PLOT
 
 
 ### Framing a Prediction Problem
+
 We are addressing a regression problem to predict recipe cooking length. Our baseline model uses two features available at the time of prediction: the number of ingredients and the number of steps. We apply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
 
 
 ### Baseline Model
+
 We used a Linear Regression model to predict recipe cooking length. The model used two quantitative features: the number of ingredients and the number of steps. Since no ordinal or nominal features were included, encoding was not necessary. The model's performance, measured by R² on both training and test sets, was weak indicating limited explanatory power. We do not believe this model is 'good' enough because it fails to capture enough variation in cooking length, likely due to the simplicity and limited scope of the features used. To improve the model, we plan to incorporate additional features such as tf-idf vectors for speed-related words in the recipe description and one-hot encodings of relevant speed keywords in tags. These features aim to capture more nuanced information related to cooking time that the current features do not represent.
 
 
