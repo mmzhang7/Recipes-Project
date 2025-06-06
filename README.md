@@ -139,14 +139,16 @@ ADD MORE ON TESTING PROCEDURE + PLOT
 
 ### Framing a Prediction Problem
 
-We are addressing a regression problem to predict recipe cooking length. Our baseline model uses two features available at the time of prediction: the number of ingredients and the number of steps. We apply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
+We are addressing a regression problem to predict recipe cooking length. The response variale that we are predicting is minutes, or number of minutes it takes to finish cooking. We chose this because we thought it would be interesting to look at how different factors of a recipe might affect its cooking time. We evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
 
 
 ### Baseline Model
 
-We used a Linear Regression model to predict recipe cooking length. The model used two quantitative features: the number of ingredients and the number of steps. Since no ordinal or nominal features were included, encoding was not necessary. The model's performance, measured by R² on both training and test sets, was weak indicating limited explanatory power. We do not believe this model is 'good' enough because it fails to capture enough variation in cooking length, likely due to the simplicity and limited scope of the features used. To improve the model, we plan to incorporate additional features such as tf-idf vectors for speed-related words in the recipe description and one-hot encodings of relevant speed keywords in tags. These features aim to capture more nuanced information related to cooking time that the current features do not represent.
+We used a Linear Regression model to predict recipe cooking length. The model used two quantitative features: the number of ingredients and the number of steps. Since no ordinal or nominal features were included, encoding was not necessary. The model's performance, measured by R² on both training and test sets, was weak (Train R²: 0.176, Test R²: 0.177), indicating limited explanatory power. We do not believe this model is 'good' enough because it fails to capture enough variation in cooking length, likely due to the simplicity and limited scope of the features used. 
 
 
 ### Final Model
+To improve the model, we added four features: 'is_easy' to represent ease based on ease-relatd tags, 'avg_ing_len' to represent the average length of the ingredients, 'desc_length' to represent the length of the description, and 'meal_type' from the tags. These features aim to capture more nuanced information related to cooking time that the current features do not represent. Usually, 'is_easy' would indicate an easier recipe, and one way to measure or represent easy recipes is through a short cook time. Recipes with longer ingredient lengths might also indicate that they are more complex and take a longer time to finish, and the same goes for longer description lengths. Different meal types, such as breakfast, lunch, and snack might take shorter times to make because of culture and/or time-of-day eaten compared to the work day, whereas dinner might take longer because as a general idea (at least culturally in the US), people eat larger dinners, and fewer people are on a set timeframe for dinners.
 
+We ended up using RandomForestRegressor
 ### Fairness Analysis
