@@ -93,7 +93,38 @@ We believe the avg_rating column in the dataset is NMAR. The missing values occu
 
 **Missingness Dependency**
 
-TO BE WRITTEN
+We conducted permutation tests using the Kolmogorov-Smirnov (KS) statistic to assess whether missingness in avg_rating is dependent on other variables. The KS statistic measures the maximum distance between two empirical distribution functions.
+
+***n_steps***
+
+Results: KS Statistic: 0.76, p-value: 0.000
+
+We hypothesized that recipe complexity (measured by number of steps) might influence rating missingness because:
+
+- Complex recipes may discourage users from completing and rating them
+- Poorly rated recipes might correlate with complex preparation
+- Users may be less likely to finish multi-step recipes
+
+***protein_PDV***
+
+Results: KS Statistic: 0.0175, p-value: 0.338
+
+We selected protein content as a likely independent variable because:
+
+- Nutritional content seems unrelated to user rating behavior
+- Protein percentage is an intrinsic recipe property
+- No plausible mechanism connects protein content to rating likelihood
+
+The likelihood of a rating being missing appears to depend on recipe complexity (n_steps), but not on nutritional content (protein_PDV). This implies that unobserved factors like user engagement, recipe appeal, or difficulty may drive the missingness, and collecting metadata such as views, saves, or image presence could help model it better.
+
+<iframe
+  src="n_steps_ks.html"
+  width="600"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The empirical distribution of the Kolmogorov-Smirnov (K-S) statistic shown in the plot represents the expected variation in distributional differences between the 'n_steps' variable for recipes with and without missing 'avg_rating' values under the null hypothesis of randomness. The histogram, based on 1,000 random permutations, indicates the distribution of K-S statistics we would expect by chance. The red vertical line marks the observed K-S statistic (0.08), which lies in the upper tail of the distribution. This suggests that the observed difference in 'n_steps' between the two groups is larger than what would typically occur due to random variation alone. Consequently, there is evidence that the missingness in 'avg_rating' may be systematically related to the number of steps in a recipe, potentially violating the assumption of missing completely at random (MCAR).
 
 ### Hypothesis Testing
 
@@ -102,27 +133,83 @@ TO BE WRITTEN
 **Alternate Hypothesis:** Recipes tagged with the 'easy' tag have higher average ratings.
 with a permutation test.
 
-**Test Statistic:** Pearson's r
+**Test Statistic:** Mean ratings of recipes with ease indicator tags - mean ratings of recipes without ease indicator tags.
 
 **Significance Value**: 0.05
 
-**Result:** p-value = 0.27
+**Result:** p-value = 0.008
 
-We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. Pearson’s r was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.27 which is greater than 0.5 so we fail to reject null hypothesis. We do not have significant evidence of a difference in average ratings between recipes with and without the 'easy' tags.
+We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. The ease indicator tags that we chose were the followng: 'easy', 'beginner', 'beginner-cook', '5-ingredients-or-less', '3-steps-or-less', '15-minutes-or-less', 'weeknight' because each of them was either the lowest '-or-less' tier or related to ease/beginner skill.
 
-ADD MORE ON TESTING PROCEDURE + PLOT
+Difference in group means was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.008 which is less than 0.05 so we reject our null hypothesis. There is significant statistical evidence to support a difference in average ratings between recipes with and without the ease 
 
+<iframe
+  src="hypothesis_test.html"
+  width="600"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The histogram shows the range of mean differences expected by chance under the null hypothesis that there is no real difference in ratings between the two groups. The red vertical line represents the observed difference of 0.011, which lies in the far-right tail of the distribution. This indicates that the observed difference is larger than most differences generated under the null hypothesis.
 
 ### Framing a Prediction Problem
 
-We are addressing a regression problem to predict recipe cooking length. Our baseline model uses two features available at the time of prediction: the number of ingredients and the number of steps. We apply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
+We are addressing a regression problem to predict recipe cooking length. We chose to predict minutes of cooking length because it seems that there are a lot of possible factors that could influence it. For our baseline model, we plan to use the three features: the number of steps, number of ingredients and average rating. We will pply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
 
 
 ### Baseline Model
 
-We used a Linear Regression model to predict recipe cooking length. The model used two quantitative features: the number of ingredients and the number of steps. Since no ordinal or nominal features were included, encoding was not necessary. The model's performance, measured by R² on both training and test sets, was weak indicating limited explanatory power. We do not believe this model is 'good' enough because it fails to capture enough variation in cooking length, likely due to the simplicity and limited scope of the features used. To improve the model, we plan to incorporate additional features such as tf-idf vectors for speed-related words in the recipe description and one-hot encodings of relevant speed keywords in tags. These features aim to capture more nuanced information related to cooking time that the current features do not represent.
+For our baseline model, we built two linear regression models to predict recipe preparation time (measured in minutes) and compared them to a constant model. Our Simple Linear Regression Model used a single predictor (n_steps) and our Multiple Linear Regression Model used three predictors (n_steps, n_ingredients and avg_rating).
+
+| Feature         | Type         | Description                                      |
+| --------------- | ------------ | ------------------------------------------------ |
+| `n_steps`       | Quantitative | Number of steps in the recipe                    |
+| `n_ingredients` | Quantitative | Number of ingredients used                       |
+| `avg_rating`    | Quantitative | Average rating of the recipe (from user reviews) |
+
+No nominal or ordinal variables were included, so no encoding was necessary. However, for the multiple linear regression model, all quantitative features were standardized using StandardScaler from sklearn to ensure comparability.
+
+The following table displays the RMSE and R^2 Score from each of these models.
+
+| Model Type                                                            | RMSE    | R² Score  |
+| --------------------------------------------------------------------- | ------- | --------- |
+| Constant Baseline                                                     | 4402.64 | N/A       |
+| Simple Linear Regression (`n_steps`)                                  | 4402.53 | 0.000055  |
+| Multiple Linear Regression (`n_steps`, `n_ingredients`, `avg_rating`) | 4402.34 | 0.0002817 |
+
+The residual plot for the simple libnear model is displayed below:
+<iframe
+  src="residual_plot.html"
+  width="600"
+  height="600"
+  frameborder="0"
+></iframe>
+
+No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Additionally, a residual plot of the simple linear model reveals residuals increasing for recipes with longer predicted times—suggesting a poor model fit. Our plans for improving on the model include using tf-idf for speed words in the description and/or one-hot vector encodings for some speed keywords in the tags.
+
+Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
+
 
 
 ### Final Model
+To improve prediction of recipe preparation time, We created several new features based on domain knowledge and patterns in the data:
+| Feature Name         | Type         | Description                                                                |
+| -------------------- | ------------ | -------------------------------------------------------------------------- |
+| `is_easy`            | Binary       | Indicates whether a recipe is tagged as "easy" based on common tag labels. |
+| `avg_ingredient_len` | Quantitative | Average word count per ingredient, a proxy for ingredient complexity.      |
+| `desc_length`        | Quantitative | Number of words in the recipe description, indicating instructional depth. |
+| `meal_type`          | Nominal      | Meal category (e.g., breakfast, lunch) extracted from tags.                |
+
+We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is (e.g., “freshly grated parmesan” vs. “cheese”). `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
+
+These features align with the data-generating process: recipe time is likely influenced by the recipe’s intended difficulty, type, and complexity of instructions and ingredients.
+
+The modeling algorithm used was a Random Forest Regressor, selected for its ability to model non-linear relationships, handle mixed feature types, and provide robustness against overfitting.
+
+Hyperparameter tuning was conducted in two phases:
+
+Grid Search was first performed over combinations of `n_estimators` (1000, 5000), `max_depth` (10, 15), and `max_features` ('sqrt'). The best result from this phase had 1000 trees, a max depth of 15, and used the square root of the number of features at each split.
+
+
 
 ### Fairness Analysis
