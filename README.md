@@ -128,14 +128,13 @@ The empirical distribution of the Kolmogorov-Smirnov (K-S) statistic shown in th
 
 ### Hypothesis Testing
 
-**Null Hypothesis:** There is no relationship for recipes tagged with the 'easy' tag and its average rating.
+**Null Hypothesis:** There is no relationship for recipes with ease indicator tags and their average rating.
 
-**Alternate Hypothesis:** Recipes tagged with the 'easy' tag have higher average ratings.
-with a permutation test.
+**Alternate Hypothesis:** Recipes with ease indicator tag have higher average ratings. with a permutation test.
 
 **Test Statistic:** Mean ratings of recipes with ease indicator tags - mean ratings of recipes without ease indicator tags.
 
-**Significance Value**: 0.05
+**Significance Value:** 0.05
 
 **Result:** p-value = 0.008
 
@@ -152,9 +151,10 @@ Difference in group means was an appropriate test statistic because it quantifie
 
 The histogram shows the range of mean differences expected by chance under the null hypothesis that there is no real difference in ratings between the two groups. The red vertical line represents the observed difference of 0.011, which lies in the far-right tail of the distribution. This indicates that the observed difference is larger than most differences generated under the null hypothesis.
 
+
 ### Framing a Prediction Problem
 
-We are addressing a regression problem to predict recipe cooking length. We chose to predict minutes of cooking length because it seems that there are a lot of possible factors that could influence it. For our baseline model, we plan to use the three features: the number of steps, number of ingredients and average rating. We will pply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks. 
+We are addressing a regression problem to predict recipe cooking length. We chose to predict minutes of cooking length because it seems that there are a lot of possible factors that could influence it. For our baseline model, we plan to use the three features: the number of steps, number of ingredients and average rating. We will pply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks.  
 
 
 ### Baseline Model
@@ -190,8 +190,8 @@ No, we do not believe the current model is a “good” one. While it was implem
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
 
 
-
 ### Final Model
+
 To improve prediction of recipe preparation time, We created several new features based on domain knowledge and patterns in the data:
 | Feature Name         | Type         | Description                                                                |
 | -------------------- | ------------ | -------------------------------------------------------------------------- |
@@ -209,7 +209,4 @@ The modeling algorithm used was a Random Forest Regressor, selected for its abil
 Hyperparameter tuning was conducted in two phases:
 
 Grid Search was first performed over combinations of `n_estimators` (1000, 5000), `max_depth` (10, 15), and `max_features` ('sqrt'). The best result from this phase had 1000 trees, a max depth of 15, and used the square root of the number of features at each split.
-
-
-
 ### Fairness Analysis
