@@ -93,22 +93,46 @@ We believe the avg_rating column in the dataset is NMAR. The missing values occu
 
 **Missingness Dependency**
 
-TO BE WRITTEN
+We conducted permutation tests using the Kolmogorov-Smirnov (KS) statistic to assess whether missingness in avg_rating is dependent on other variables. The KS statistic measures the maximum distance between two empirical distribution functions.
+
+***n_steps***
+
+Results: KS Statistic: 0.0759, p-value: 0.000
+
+We hypothesized that recipe complexity (measured by number of steps) might influence rating missingness because:
+
+- Complex recipes may discourage users from completing and rating them
+- Poorly rated recipes might correlate with complex preparation
+- Users may be less likely to finish multi-step recipes
+
+***protein_PDV***
+
+Results: KS Statistic: 0.0175, p-value: 0.338
+
+We selected protein content as a likely independent variable because:
+
+- Nutritional content seems unrelated to user rating behavior
+- Protein percentage is an intrinsic recipe property
+- No plausible mechanism connects protein content to rating likelihood
+
+With this, we believe that avg_rating is MAR based on protein_PDV.
+
 
 ### Hypothesis Testing
 
-**Null Hypothesis:** There is no relationship for recipes tagged with the 'easy' tag and its average rating.
+**Null Hypothesis:** There is no relationship for recipes with ease indicator tags and their average rating.
 
-**Alternate Hypothesis:** Recipes tagged with the 'easy' tag have higher average ratings.
-with a permutation test.
+**Alternate Hypothesis:** Recipes with ease indicator tag have higher average ratings. with a permutation test.
 
-**Test Statistic:** Pearson's r
+**Test Statistic:** Mean ratings of recipes with ease indicator tags - mean ratings of recipes without ease indicator tags.
 
-**Significance Value**: 0.05
+**Significance Value:** 0.05
 
-**Result:** p-value = 0.27
+**Result:** p-value = 0.009
 
-We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. Pearson’s r was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.27 which is greater than 0.5 so we fail to reject null hypothesis. We do not have significant evidence of a difference in average ratings between recipes with and without the 'easy' tags.
+We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. The ease indicator tags that we chose were the followng: 'easy', 'beginner', 'beginner-cook', '5-ingredients-or-less', '3-steps-or-less', '15-minutes-or-less', 'weeknight' because each of them was either the lowest '-or-less' tier or related to ease/beginner skill.
+
+Difference in group means was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.008 which is less than 0.05 so we reject our null hypothesis. There is significant statistical evidence to support a difference in average ratings between recipes with and without the ease indicator tags.
 
 ADD MORE ON TESTING PROCEDURE + PLOT
 
