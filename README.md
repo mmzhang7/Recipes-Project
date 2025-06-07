@@ -45,7 +45,7 @@ To ensure accurate and meaningful analysis, we performed several data cleaning s
 
 The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
-> **Effect on analysis:** By excluding invalid ratings, we ensured that the average rating reflects actual user evaluations rather than missing data.
+**Effect on analysis:** By excluding invalid ratings, we ensured that the average rating reflects actual user evaluations rather than missing data.
 
 ---
 
@@ -62,7 +62,7 @@ This format limited our ability to analyze or model individual nutritional compo
 - `saturated_fat_PDV`
 - `carbohydrates_PDV`
 
-> **Effect on analysis:** This transformation allowed us to include specific nutritional features in modeling and correlation analyses, improving the interpretability and granularity of our results.
+**Effect on analysis:** This transformation allowed us to include specific nutritional features in modeling and correlation analyses, improving the interpretability and granularity of our results.
 
 ---
 
@@ -80,7 +80,7 @@ We applied this function to the following columns:
 - `steps`
 - `ingredients`
 
-> **Effect on analysis:** This step enabled us to count elements (e.g., number of ingredients), identify recipes with certain tags, and perform keyword-based filtering or encoding.
+**Effect on analysis:** This step enabled us to count elements (e.g., number of ingredients), identify recipes with certain tags, and perform keyword-based filtering or encoding.
 
 ---
 
