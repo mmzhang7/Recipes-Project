@@ -41,7 +41,7 @@ This dataset is particularly valuable to readers interested in food, time manage
 
 To ensure accurate and meaningful analysis, we performed several data cleaning steps based on our understanding of how the dataset was generated. Below, we outline each step, explain its rationale, and describe its impact on our analyses.
 
-** 1. Replacing 0-Star Ratings with Missing Values**
+**1. Replacing 0-Star Ratings with Missing Values**
 
 The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
@@ -175,7 +175,7 @@ The table below displays these values:
 | 33            | 1     | 5.0000 | 5      |
 | 37            | 1     | 5.0000 | 5      |
 
-This table confirms several trends observed earlier. Most recipes cluster between **5–10 ingredients**, reflecting the popularity of simpler dishes. While **average ratings are generally high** across all groups, an intriguing pattern appears: **recipes with more ingredients (31–37) consistently receive perfect 5-star ratings**, although these are rare. This may indicate that more elaborate recipes, while less common, are especially appreciated by users—possibly because they deliver more flavor or require more effort, leading to greater satisfaction. However, the lack of variation in median ratings (all are 5) also suggests that **user ratings may not be very sensitive to ingredient count**.
+This table confirms several trends observed earlier. Most recipes cluster between **5–10 ingredients**, reflecting the popularity of simpler dishes. While **average ratings are generally high** across all groups, an intriguing pattern appears: **recipes with more ingredients (31–37) consistently receive perfect 5-star ratings**, although these are rare. This may indicate that more elaborate recipes, while less common, are especially appreciated by users, leading to greater satisfaction. However, the lack of variation in median ratings (all are 5) also suggests that **user ratings may not be very sensitive to ingredient count**.
 
 ---
 
@@ -183,7 +183,7 @@ This table confirms several trends observed earlier. Most recipes cluster betwee
 
 **NMAR Analysis**
 
-We believe the avg_rating column in the dataset is NMAR. The missing values occur because some recipes have not been rated by users, and this missingness may depend on unobserved factors such as the recipe’s popularity or visibility on the platform. For example, less appealing or rarely viewed recipes may be less likely to receive ratings. To potentially make this missingness MAR, we could collect additional data such as the number of views, saves, or shares a recipe has, or whether it includes a photo or tags—factors that might influence whether a user rates a recipe.
+We believe the avg_rating column in the dataset is NMAR. The missing values occur because some recipes have not been rated by users, and this missingness may depend on unobserved factors such as the recipe’s popularity or visibility on the platform. For example, less appealing or rarely viewed recipes may be less likely to receive ratings. To potentially make this missingness MAR, we could collect additional data such as the number of views, saves, or shares a recipe has, or whether it includes a photo or tags.
 
 **Missingness Dependency**
 
@@ -278,7 +278,7 @@ The residual plot for the simple linear model is displayed below:
   frameborder="0"
 ></iframe>
 
-No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores (only about 22% of variance is explained. However, we do have a roughly equal train and test R². Our plans for improving on the model include adding different transformations, including one-hot vector encodings for some speed keywords in the tags.
+No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Our plans for improving on the model include adding different transformations, including one-hot encodings for some speed keywords in the tags.
 
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
 
