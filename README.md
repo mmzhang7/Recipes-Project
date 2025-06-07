@@ -287,12 +287,13 @@ Overall, while the model offers a basic start, its performance metrics indicate 
 ### Final Model
 
 To improve prediction of recipe preparation time, We created several new features based on domain knowledge and patterns in the data:
-| Feature Name         | Type         | Description                                                                |
-| -------------------- | ------------ | -------------------------------------------------------------------------- |
+| Feature Name         | Type         | Description                                                                 |
+|----------------------|--------------|-----------------------------------------------------------------------------|
 | `is_easy`            | Binary       | Indicates whether a recipe is tagged as "easy" based on common tag labels. |
-| `avg_ingredient_len` | Quantitative | Average word count per ingredient, a proxy for ingredient complexity.      |
-| `desc_length`        | Quantitative | Number of words in the recipe description, indicating instructional depth. |
-| `meal_type`          | Nominal      | Meal category (e.g., breakfast, lunch) extracted from tags.                |
+| `avg_ingredient_len` | Quantitative | Average word count per ingredient, a proxy for ingredient complexity.       |
+| `desc_length`        | Quantitative | Number of words in the recipe description, indicating instructional depth.  |
+| `meal_type`          | Nominal      | Meal category (e.g., breakfast, lunch) extracted from tags.                 |
+
 
 We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is (e.g., “freshly grated parmesan” vs. “cheese”). `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
 
