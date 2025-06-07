@@ -10,7 +10,7 @@ The central question guiding our analysis is: **What factors best predict the ti
 
 To explore this question, we merged the recipe and rating datasets using a left join on the recipe ID and calculated the **average rating per recipe**, which we added to the original recipes dataframe. Our final dataset contains **83,782 recipes**.
 
-### Relevant Columns
+**Relevant Columns**
 
 From the recipes dataset:
 
@@ -35,13 +35,13 @@ We derived an additional feature:
 This dataset is particularly valuable to readers interested in food, time management, and data-driven cooking recommendations. By understanding which recipe features are most strongly associated with preparation time, we can help users make more informed choices about what to cook based on their time constraints and preferences.
 
 
-#### Data Cleaning and Exploratory Data Analysis
+### Data Cleaning and Exploratory Data Analysis
 
 **Data Cleaning**
 
 To ensure accurate and meaningful analysis, we performed several data cleaning steps based on our understanding of how the dataset was generated. Below, we outline each step, explain its rationale, and describe its impact on our analyses.
 
-### 1. Replacing 0-Star Ratings with Missing Values
+#### 1. Replacing 0-Star Ratings with Missing Values
 
 The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
@@ -96,7 +96,7 @@ Below is a preview of the cleaned dataset (`recipes.head()`), including the proc
 | 286009 | millionaire pound cake               |       120 | ['time-to-make', 'course', 'cuisine', 'preparation', 'occasion', 'north-american', 'desserts', 'american', 'southern-united-states', 'dinner-party', 'holiday-event', 'cakes', 'dietary', 'christmas', 'thanksgiving', 'low-sodium', 'low-in-something', 'taste-mood', 'sweet', '4-hours-or-less'] |         7 | ['freheat the oven to 300 degrees', 'gre... | ['butter', 'sugar', 'eggs', 'all-purpose... | why a millionaire pound cake?  because i... |            5 |
 | 475785 | 2000 meatloaf                        |        90 | ['time-to-make', 'course', 'main-ingredient', 'preparation', 'main-dish', 'potatoes', 'vegetables', '4-hours-or-less', 'meatloaf', 'simply-potatoes2']                                                                                                                                             |        17 | ['pan fry bacon', 'and set aside on a pa... | ['meatloaf mixture', 'unsmoked bacon', '... | ready, set, cook! special edition contes... |            5 |
 
-### Univariate Analysis: Number of Ingredients
+**Univariate Analysis: Number of Ingredients**
 
 One of the variables we decided to examine was the **number of ingredients**, as we believed it could serve as a useful proxy for recipe complexity. The histogram below shows the distribution:
 
@@ -111,7 +111,7 @@ The distribution is right-skewed. Most recipes contain between **5 to 10 ingredi
 
 ---
 
-### Bivariate Analysis: Ingredients vs. Average Rating
+**Bivariate Analysis: Ingredients vs. Average Rating**
 
 To further explore the role of complexity, we analyzed the relationship between **number of ingredients** and **average user rating**. The scatterplot below visualizes this relationship:
 
@@ -128,7 +128,7 @@ The scatterplot reveals that recipes with **fewer ingredients** exhibit a wider 
 
 
 
-### Interesting Aggregates: Number of Ingredients vs. Rating
+**Interesting Aggregates: Number of Ingredients vs. Rating**
 
 To further explore the relationship between recipe complexity and user satisfaction, we aggregated our data by the **`n_ingredients`** column and created a pivot table that summarizes:
 
@@ -179,7 +179,7 @@ This table confirms several trends observed earlier. Most recipes cluster betwee
 
 ---
 
-## Assessment of Missingness
+### Assessment of Missingness
 
 **NMAR Analysis**
 
@@ -296,7 +296,7 @@ To improve prediction of recipe preparation time, We created several new feature
 | `meal_type`          | Nominal      | Meal category (e.g., breakfast, lunch) extracted from tags.                 |
 
 
-We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is (e.g., “freshly grated parmesan” vs. “cheese”). `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
+We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is. `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
 
 These features align with the data-generating process: recipe time is likely influenced by the recipe’s intended difficulty, type, and complexity of instructions and ingredients.
 
