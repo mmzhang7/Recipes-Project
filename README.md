@@ -41,7 +41,7 @@ This dataset is particularly valuable to readers interested in food, time manage
 
 To ensure accurate and meaningful analysis, we performed several data cleaning steps based on our understanding of how the dataset was generated. Below, we outline each step, explain its rationale, and describe its impact on our analyses.
 
-#### 1. Replacing 0-Star Ratings with Missing Values
+** 1. Replacing 0-Star Ratings with Missing Values**
 
 The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
@@ -49,7 +49,7 @@ The first cleaning step involved addressing inconsistencies in the ratings data.
 
 ---
 
-#### 2. Splitting the `nutrition` Column into Separate Features
+**2. Splitting the `nutrition` Column into Separate Features**
 
 The `nutrition` column originally stored nutritional data as a single string in the format: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]
 This format limited our ability to analyze or model individual nutritional components. To address this, we created a function that parsed the string and extracted each value into its own numeric column. We added the following new columns:
@@ -66,7 +66,7 @@ This format limited our ability to analyze or model individual nutritional compo
 
 ---
 
-#### 3. Parsing List-Formatted Strings into Actual Python Lists
+**3. Parsing List-Formatted Strings into Actual Python Lists**
 
 The `tags`, `steps`, and `ingredients` columns were stored as strings that resembled Python lists (e.g., `"['easy', 'vegan']"`). These needed to be converted into actual list objects to support proper manipulation and analysis.
 
@@ -84,7 +84,7 @@ We applied this function to the following columns:
 
 ---
 
-#### Final Cleaned Data Preview
+**Final Cleaned Data Preview**
 
 Below is a preview of the cleaned dataset (`recipes.head()`), including the processed columns:
 
