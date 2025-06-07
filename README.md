@@ -10,7 +10,7 @@ The central question guiding our analysis is: **What factors best predict the ti
 
 To explore this question, we merged the recipe and rating datasets using a left join on the recipe ID and calculated the **average rating per recipe**, which we added to the original recipes dataframe. Our final dataset contains **83,782 recipes**.
 
-### Relevant Columns
+**Relevant Columns**
 
 From the recipes dataset:
 
@@ -20,7 +20,7 @@ From the recipes dataset:
 - **`tags`**: Food.com tags for each recipe (e.g., "easy", "vegan", "holiday").
 - **`n_steps`**: Number of steps in the recipe's instructions.
 - **`steps`**: Text for each step of the recipe, in order.
-- **`ingredients`** *(inferred from data)*: A list of ingredients used in the recipe.
+- **`ingredients`**: A list of ingredients used in the recipe.
 - **`description`**: User-provided description or blurb about the recipe.
 
 From the ratings dataset:
@@ -41,7 +41,7 @@ This dataset is particularly valuable to readers interested in food, time manage
 
 To ensure accurate and meaningful analysis, we performed several data cleaning steps based on our understanding of how the dataset was generated. Below, we outline each step, explain its rationale, and describe its impact on our analyses.
 
-### 1. Replacing 0-Star Ratings with Missing Values
+#### 1. Replacing 0-Star Ratings with Missing Values
 
 The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
@@ -49,7 +49,7 @@ The first cleaning step involved addressing inconsistencies in the ratings data.
 
 ---
 
-### 2. Splitting the `nutrition` Column into Separate Features
+#### 2. Splitting the `nutrition` Column into Separate Features
 
 The `nutrition` column originally stored nutritional data as a single string in the format: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]
 This format limited our ability to analyze or model individual nutritional components. To address this, we created a function that parsed the string and extracted each value into its own numeric column. We added the following new columns:
@@ -66,7 +66,7 @@ This format limited our ability to analyze or model individual nutritional compo
 
 ---
 
-### 3. Parsing List-Formatted Strings into Actual Python Lists
+#### 3. Parsing List-Formatted Strings into Actual Python Lists
 
 The `tags`, `steps`, and `ingredients` columns were stored as strings that resembled Python lists (e.g., `"['easy', 'vegan']"`). These needed to be converted into actual list objects to support proper manipulation and analysis.
 
@@ -84,7 +84,7 @@ We applied this function to the following columns:
 
 ---
 
-### Final Cleaned Data Preview
+#### Final Cleaned Data Preview
 
 Below is a preview of the cleaned dataset (`recipes.head()`), including the processed columns:
 
@@ -96,7 +96,7 @@ Below is a preview of the cleaned dataset (`recipes.head()`), including the proc
 | 286009 | millionaire pound cake               |       120 | ['time-to-make', 'course', 'cuisine', 'preparation', 'occasion', 'north-american', 'desserts', 'american', 'southern-united-states', 'dinner-party', 'holiday-event', 'cakes', 'dietary', 'christmas', 'thanksgiving', 'low-sodium', 'low-in-something', 'taste-mood', 'sweet', '4-hours-or-less'] |         7 | ['freheat the oven to 300 degrees', 'gre... | ['butter', 'sugar', 'eggs', 'all-purpose... | why a millionaire pound cake?  because i... |            5 |
 | 475785 | 2000 meatloaf                        |        90 | ['time-to-make', 'course', 'main-ingredient', 'preparation', 'main-dish', 'potatoes', 'vegetables', '4-hours-or-less', 'meatloaf', 'simply-potatoes2']                                                                                                                                             |        17 | ['pan fry bacon', 'and set aside on a pa... | ['meatloaf mixture', 'unsmoked bacon', '... | ready, set, cook! special edition contes... |            5 |
 
-### Univariate Analysis: Number of Ingredients
+**Univariate Analysis: Number of Ingredients**
 
 One of the variables we decided to examine was the **number of ingredients**, as we believed it could serve as a useful proxy for recipe complexity. The histogram below shows the distribution:
 
@@ -111,7 +111,7 @@ The distribution is right-skewed. Most recipes contain between **5 to 10 ingredi
 
 ---
 
-### Bivariate Analysis: Ingredients vs. Average Rating
+**Bivariate Analysis: Ingredients vs. Average Rating**
 
 To further explore the role of complexity, we analyzed the relationship between **number of ingredients** and **average user rating**. The scatterplot below visualizes this relationship:
 
@@ -128,7 +128,7 @@ The scatterplot reveals that recipes with **fewer ingredients** exhibit a wider 
 
 
 
-### Interesting Aggregates: Number of Ingredients vs. Rating
+**Interesting Aggregates: Number of Ingredients vs. Rating**
 
 To further explore the relationship between recipe complexity and user satisfaction, we aggregated our data by the **`n_ingredients`** column and created a pivot table that summarizes:
 
@@ -179,7 +179,7 @@ This table confirms several trends observed earlier. Most recipes cluster betwee
 
 ---
 
-## Assessment of Missingness
+### Assessment of Missingness
 
 **NMAR Analysis**
 
@@ -303,7 +303,7 @@ These features relate directly to the recipe’s nature and complexity, which in
 
 A Random Forest Regressor was selected for its ability to handle nonlinear relationships and mixed feature types robustly. Initially, a baseline Random Forest model showed a strong fit on training data (Train R² = 0.837) but poor generalization on the test set (Test R² = 0.126), indicating potential overfitting.
 
-To improve this, hyperparameter tuning was performed using both Grid Search and Randomized Search. Grid Search explored combinations of `n_estimators` (1000, 5000), `max_depth` (10, 15), and `max_features` ('sqrt'). The best parameters found were `n_estimators=5000`, `max_depth=10`, and `max_features='sqrt'`, improving the test R² to 0.264, more than doubling the baseline test performance.
+We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is. `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
 
 Subsequently, a Randomized Search over a wider hyperparameter space including `min_samples_leaf` and additional options for `max_features` further optimized the model with MAE as the evaluation metric. This approach balanced model complexity and generalization better than the baseline.
 
