@@ -4,23 +4,102 @@
 
 ### Introduction
 
-The dataset we chose to analyze was the "Recipes and Ratings" dataset, which included data on various recipes and their ratings from food.com. The data comes from two csv files, one which includes recipes data and the other of which includes the reviews and ratings submitted for each recipe. We wanted to use these datasets to answer the question "Is there a significant relationship between recipe complexity and recipe rating?". We defined complexity as a combination of the variables: (standardized) minutes, number of ingredients and number of steps. To access this data, we first left merged the two datasets on recipe, then calculated the average rating per recipe and added it to the original "recipes" dataframe. Our final dataframe had 83782 rows (meaning 83782 recipes). The columns that we analyzed were "minutes" (Minutes to prepare recipe), "n_steps" (Number of steps in recipe) and "ingredients" (List of ingredients in recipe).
+The dataset we chose to analyze is the **"Recipes and Ratings"** dataset from Food.com, which contains detailed information about various recipes alongside user-submitted reviews and ratings. The data comes from two CSV files: one containing metadata about each recipe and the other containing user interactions.
+
+The central question guiding our analysis is: **What factors best predict the time it takes to complete a recipe?** Specifically, we aim to investigate how features such as the number of ingredients, number of steps, user ratings, recipe tags, and descriptions relate to the total preparation time.
+
+To explore this question, we merged the recipe and rating datasets using a left join on the recipe ID and calculated the **average rating per recipe**, which we added to the original recipes dataframe. Our final dataset contains **83,782 recipes**.
+
+### Relevant Columns
+
+From the recipes dataset:
+
+- **`id`**: Unique ID for each recipe.
+- **`name`**: The name of the recipe.
+- **`minutes`**: Time (in minutes) required to prepare the recipe — this is our outcome variable.
+- **`tags`**: Food.com tags for each recipe (e.g., "easy", "vegan", "holiday").
+- **`n_steps`**: Number of steps in the recipe's instructions.
+- **`steps`**: Text for each step of the recipe, in order.
+- **`ingredients`** *(inferred from data)*: A list of ingredients used in the recipe.
+- **`description`**: User-provided description or blurb about the recipe.
+
+From the ratings dataset:
+
+- **`recipe_id`**: Corresponds to the recipe ID in the main dataset.
+- **`rating`**: Rating given by a user (used to compute average rating per recipe).
+
+We derived an additional feature:
+
+- **`avg_rating`**: The mean of all ratings given to each recipe.
+
+This dataset is particularly valuable to readers interested in food, time management, and data-driven cooking recommendations. By understanding which recipe features are most strongly associated with preparation time, we can help users make more informed choices about what to cook based on their time constraints and preferences.
+
 
 ### Data Cleaning and Exploratory Data Analysis
 
 **Data Cleaning**
 
-The first step we took to clean our data was filling ratings of 0 with np.nan. This is because these 0 ratings are from reviews where the reviewer failed to add a rating. The minimum possible star rating to give a recipe on food.com is a 1 star, and it only displays as 0 stars when a rating is missing. We added the np.nan values instead so the average rating is not incorrectly lowered.
+To ensure accurate and meaningful analysis, we performed several data cleaning steps based on our understanding of how the dataset was generated. Below, we outline each step, explain its rationale, and describe its impact on our analyses.
 
-The next step we took to clean our data was to split up the nutrition column into multiple columns for each variable contained in it. Each entry in this column was a string in the format:[calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]. We implemented a function that parsed through each string, separated it into the different variables present and then added the separate values in at individual columns. We ended up adding these following columns: calories, total_fat_PDV, sugar_PDV, sodium_PDV,protein_PDV,saturated_fat_PDV and carbohydrates_PDV.
+### 1. Replacing 0-Star Ratings with Missing Values
 
-Additionally, we noticed that there were other columns with a similar list format. The tags, steps and ingredients columns were strings that looked like lists. We implemented a parse_list_str function that took a string and returned it in a list. We applied this function to the tags, steps and ingredients columns and replaced the strings in these columns with their list equivalents. Our final cleaned dataframe head is displayed below:
+The first cleaning step involved addressing inconsistencies in the ratings data. We observed that some recipes had a rating value of **0**, which is not a valid user rating on Food.com. The minimum allowed rating on the platform is **1 star**. A rating of 0 typically appears when a user submits a review without assigning a star rating. To prevent these from skewing the computed average ratings downward, we replaced all 0s in the `rating` column with `np.nan`. This allowed us to exclude them when calculating the `average_rating` per recipe.
 
-![Head](df_head.png)
+> **Effect on analysis:** By excluding invalid ratings, we ensured that the average rating reflects actual user evaluations rather than missing data.
 
-**Univariate Analysis**
+---
 
-One of the variables we decided to look at was the number of ingredients since we thought it could be a good indicator of complexity. The histogram generated is displayed below:
+### 2. Splitting the `nutrition` Column into Separate Features
+
+The `nutrition` column originally stored nutritional data as a single string in the format: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]
+This format limited our ability to analyze or model individual nutritional components. To address this, we created a function that parsed the string and extracted each value into its own numeric column. We added the following new columns:
+
+- `calories`
+- `total_fat_PDV`
+- `sugar_PDV`
+- `sodium_PDV`
+- `protein_PDV`
+- `saturated_fat_PDV`
+- `carbohydrates_PDV`
+
+> **Effect on analysis:** This transformation allowed us to include specific nutritional features in modeling and correlation analyses, improving the interpretability and granularity of our results.
+
+---
+
+### 3. Parsing List-Formatted Strings into Actual Python Lists
+
+The `tags`, `steps`, and `ingredients` columns were stored as strings that resembled Python lists (e.g., `"['easy', 'vegan']"`). These needed to be converted into actual list objects to support proper manipulation and analysis.
+
+We implemented a function, `parse_list_str`, which:
+- Removed leading/trailing brackets and quotation marks,
+- Split the string into elements,
+- Returned a clean list.
+
+We applied this function to the following columns:
+- `tags`
+- `steps`
+- `ingredients`
+
+> **Effect on analysis:** This step enabled us to count elements (e.g., number of ingredients), identify recipes with certain tags, and perform keyword-based filtering or encoding.
+
+---
+
+### Final Cleaned Data Preview
+
+Below is a preview of the cleaned dataset (`recipes.head()`), including the processed columns:
+
+|     id | name                                 |   minutes | tags                                                                                                                                                                                                                                                                                               |   n_steps | steps                                       | ingredients                                 | description                                 |   avg_rating |
+|-------:|:-------------------------------------|----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------:|:--------------------------------------------|:--------------------------------------------|:--------------------------------------------|-------------:|
+| 333281 | 1 brownies in the world    best ever |        40 | ['60-minutes-or-less', 'time-to-make', 'course', 'main-ingredient', 'preparation', 'for-large-groups', 'desserts', 'lunch', 'snacks', 'cookies-and-brownies', 'chocolate', 'bar-cookies', 'brownies', 'number-of-servings']                                                                        |        10 | ['heat the oven to 350f and arrange the ... | ['bittersweet chocolate', 'unsalted butt... | these are the most; chocolatey, moist, r... |            4 |
+| 453467 | 1 in canada chocolate chip cookies   |        45 | ['60-minutes-or-less', 'time-to-make', 'cuisine', 'preparation', 'north-american', 'for-large-groups', 'canadian', 'british-columbian', 'number-of-servings']                                                                                                                                      |        12 | ['pre-heat oven the 350 degrees f', 'in ... | ['white sugar', 'brown sugar', 'salt', '... | this is the recipe that we use at my sch... |            5 |
+| 306168 | 412 broccoli casserole               |        40 | ['60-minutes-or-less', 'time-to-make', 'course', 'main-ingredient', 'preparation', 'side-dishes', 'vegetables', 'easy', 'beginner-cook', 'broccoli']                                                                                                                                               |         6 | ['preheat oven to 350 degrees', 'spray a... | ['frozen broccoli cuts', 'cream of chick... | since there are already 411 recipes for ... |            5 |
+| 286009 | millionaire pound cake               |       120 | ['time-to-make', 'course', 'cuisine', 'preparation', 'occasion', 'north-american', 'desserts', 'american', 'southern-united-states', 'dinner-party', 'holiday-event', 'cakes', 'dietary', 'christmas', 'thanksgiving', 'low-sodium', 'low-in-something', 'taste-mood', 'sweet', '4-hours-or-less'] |         7 | ['freheat the oven to 300 degrees', 'gre... | ['butter', 'sugar', 'eggs', 'all-purpose... | why a millionaire pound cake?  because i... |            5 |
+| 475785 | 2000 meatloaf                        |        90 | ['time-to-make', 'course', 'main-ingredient', 'preparation', 'main-dish', 'potatoes', 'vegetables', '4-hours-or-less', 'meatloaf', 'simply-potatoes2']                                                                                                                                             |        17 | ['pan fry bacon', 'and set aside on a pa... | ['meatloaf mixture', 'unsmoked bacon', '... | ready, set, cook! special edition contes... |            5 |
+
+### Univariate Analysis: Number of Ingredients
+
+One of the variables we decided to examine was the **number of ingredients**, as we believed it could serve as a useful proxy for recipe complexity. The histogram below shows the distribution:
+
 <iframe
   src="n_ingredients_distribution.html"
   width="600"
@@ -28,11 +107,14 @@ One of the variables we decided to look at was the number of ingredients since w
   frameborder="0"
 ></iframe>
 
-The distribution of the number of ingredients is skewed. For most recipes, the number of ingredients falls around 5-10 ingredients. There are a few outlier swith a maximum of 36 ingredients included.
+The distribution is right-skewed. Most recipes contain between **5 to 10 ingredients**, suggesting that simpler recipes are more common on Food.com. However, there are a few outliers with up to **36 ingredients**, indicating the presence of more complex recipes. This variability in ingredient count gives us a way to explore how recipe complexity may impact user ratings.
 
-**Bivariate Analysis**
+---
 
-We continued to analyze our data by examining the relationship between the number of ingredients and the average rating. We created the scatterplot below:
+### Bivariate Analysis: Ingredients vs. Average Rating
+
+To further explore the role of complexity, we analyzed the relationship between **number of ingredients** and **average user rating**. The scatterplot below visualizes this relationship:
+
 <iframe
   src="ingredients_vs_rating.html"
   width="600"
@@ -40,52 +122,64 @@ We continued to analyze our data by examining the relationship between the numbe
   frameborder="0"
 ></iframe>
 
-From the scatterplot we can see that most recipes, regardless of ingredient count, receive high average ratings close to 5. However, simpler recipes show a wider range of ratings, including more low-rated outliers. In contrast, recipes with more ingredients tend to receive consistently high ratings, though they are less frequent. This suggests that while simple recipes are popular, more complex ones may be more reliably well-received.
+The scatterplot reveals that recipes with **fewer ingredients** exhibit a wider range of average ratings, including more low-rated outliers. In contrast, recipes with **many ingredients** tend to have consistently high ratings, although they are less common. This suggests that while simple recipes are accessible and popular, more **ingredient-rich recipes may be perceived as higher quality or more reliably satisfying** by users.
 
-**Interesting Aggregates**
+---
 
-We chose to aggregate our data by the "n_ingredients" column and looked at the count, mean and median values. The pivot table generated is shown below:
 
-|   n_ingredients |   count |    mean |   median |
-|----------------:|--------:|--------:|---------:|
-|               1 |      13 | 4.86154 |        5 |
-|               2 |     723 | 4.69258 |        5 |
-|               3 |    2280 | 4.66203 |        5 |
-|               4 |    4348 | 4.63394 |        5 |
-|               5 |    6355 | 4.64743 |        5 |
-|               6 |    7302 | 4.6331  |        5 |
-|               7 |    8271 | 4.62407 |        5 |
-|               8 |    8657 | 4.61152 |        5 |
-|               9 |    8378 | 4.60638 |        5 |
-|              10 |    7765 | 4.61023 |        5 |
-|              11 |    6751 | 4.62276 |        5 |
-|              12 |    5557 | 4.61677 |        5 |
-|              13 |    4353 | 4.63185 |        5 |
-|              14 |    3126 | 4.61637 |        5 |
-|              15 |    2316 | 4.6306  |        5 |
-|              16 |    1629 | 4.62501 |        5 |
-|              17 |    1104 | 4.63257 |        5 |
-|              18 |     754 | 4.68762 |        5 |
-|              19 |     489 | 4.61161 |        5 |
-|              20 |     357 | 4.60754 |        5 |
-|              21 |     209 | 4.65912 |        5 |
-|              22 |     136 | 4.69335 |        5 |
-|              23 |      90 | 4.77853 |        5 |
-|              24 |      72 | 4.60467 |        5 |
-|              25 |      37 | 4.70721 |        5 |
-|              26 |      28 | 4.7593  |        5 |
-|              27 |      23 | 4.60973 |        5 |
-|              28 |      17 | 4.85924 |        5 |
-|              29 |      10 | 4.96571 |        5 |
-|              30 |      11 | 4.86818 |        5 |
-|              31 |       8 | 5       |        5 |
-|              32 |       2 | 5       |        5 |
-|              33 |       1 | 5       |        5 |
-|              37 |       1 | 5       |        5 |
 
-The pivot table shows that recipes with fewer ingredients are much more common, with the highest counts between 5 and 10 ingredients. Average ratings are generally high across all ingredient counts, with all medians staying at 5.0. An interesting observation is that the recipes with the highest number of ingredients (31-37) received perfect 5 star ratings in all reviews. Overall, there’s no clear link between the number of ingredients and average rating since simpler and more complex recipes both tend to receive high ratings.
+### Interesting Aggregates: Number of Ingredients vs. Rating
 
-### Assessment of Missingness
+To further explore the relationship between recipe complexity and user satisfaction, we aggregated our data by the **`n_ingredients`** column and created a pivot table that summarizes:
+
+- **`count`**: Number of recipes with that ingredient count  
+- **`mean`**: Average rating  
+- **`median`**: Median rating  
+
+The table below displays these values:
+
+| n_ingredients | count | mean   | median |
+|---------------|-------|--------|--------|
+| 1             | 13    | 4.8615 | 5      |
+| 2             | 723   | 4.6926 | 5      |
+| 3             | 2,280 | 4.6620 | 5      |
+| 4             | 4,348 | 4.6339 | 5      |
+| 5             | 6,355 | 4.6474 | 5      |
+| 6             | 7,302 | 4.6331 | 5      |
+| 7             | 8,271 | 4.6241 | 5      |
+| 8             | 8,657 | 4.6115 | 5      |
+| 9             | 8,378 | 4.6064 | 5      |
+| 10            | 7,765 | 4.6102 | 5      |
+| 11            | 6,751 | 4.6228 | 5      |
+| 12            | 5,557 | 4.6168 | 5      |
+| 13            | 4,353 | 4.6318 | 5      |
+| 14            | 3,126 | 4.6164 | 5      |
+| 15            | 2,316 | 4.6306 | 5      |
+| 16            | 1,629 | 4.6250 | 5      |
+| 17            | 1,104 | 4.6326 | 5      |
+| 18            | 754   | 4.6876 | 5      |
+| 19            | 489   | 4.6116 | 5      |
+| 20            | 357   | 4.6075 | 5      |
+| 21            | 209   | 4.6591 | 5      |
+| 22            | 136   | 4.6934 | 5      |
+| 23            | 90    | 4.7785 | 5      |
+| 24            | 72    | 4.6047 | 5      |
+| 25            | 37    | 4.7072 | 5      |
+| 26            | 28    | 4.7593 | 5      |
+| 27            | 23    | 4.6097 | 5      |
+| 28            | 17    | 4.8592 | 5      |
+| 29            | 10    | 4.9657 | 5      |
+| 30            | 11    | 4.8682 | 5      |
+| 31            | 8     | 5.0000 | 5      |
+| 32            | 2     | 5.0000 | 5      |
+| 33            | 1     | 5.0000 | 5      |
+| 37            | 1     | 5.0000 | 5      |
+
+This table confirms several trends observed earlier. Most recipes cluster between **5–10 ingredients**, reflecting the popularity of simpler dishes. While **average ratings are generally high** across all groups, an intriguing pattern appears: **recipes with more ingredients (31–37) consistently receive perfect 5-star ratings**, although these are rare. This may indicate that more elaborate recipes, while less common, are especially appreciated by users—possibly because they deliver more flavor or require more effort, leading to greater satisfaction. However, the lack of variation in median ratings (all are 5) also suggests that **user ratings may not be very sensitive to ingredient count**.
+
+---
+
+## Assessment of Missingness
 
 **NMAR Analysis**
 
