@@ -191,7 +191,17 @@ We conducted permutation tests using the Kolmogorov-Smirnov (KS) statistic to as
 
 ***n_steps***
 
-Results: KS Statistic: 0.76, p-value: 0.000
+**Null Hypothesis:** The distribution of `n_steps` when `avg_rating` is missing is the same as the distribution of `n_steps` when `avg_rating` is not missing.
+
+**Alternate Hypothesis:** The distribution of `n_steps` when `avg_rating` is missing is not same as the distribution of `n_steps` when `avg_rating` is not missing.
+
+**Test Statistic:** K-S Statistic
+
+**Significance Level:** 0.05
+
+**Results:** Observed KS Statistic: 0.076
+
+**p-value:** 0.000
 
 We hypothesized that recipe complexity (measured by number of steps) might influence rating missingness because:
 
@@ -201,7 +211,17 @@ We hypothesized that recipe complexity (measured by number of steps) might influ
 
 ***protein_PDV***
 
-Results: KS Statistic: 0.0175, p-value: 0.338
+**Null Hypothesis:** The distribution of `protein_PDV` when `avg_rating` is missing is the same as the distribution of `protein_PDV` when `avg_rating` is not missing.
+
+**Alternate Hypothesis:** The distribution of `protein_PDV` when `avg_rating` is missing is not same as the distribution of `protein_PDV` when `avg_rating` is not missing.
+
+**Test Statistic:** K-S Statistic
+
+**Significance Level:** 0.05
+
+**Results:** Observed KS Statistic: 0.018
+
+**p-value:** 0.324
 
 We selected protein content as a likely independent variable because:
 
@@ -218,7 +238,7 @@ The likelihood of a rating being missing appears to depend on recipe complexity 
   frameborder="0"
 ></iframe>
 
-The empirical distribution of the Kolmogorov-Smirnov (K-S) statistic shown in the plot represents the expected variation in distributional differences between the 'n_steps' variable for recipes with and without missing 'avg_rating' values under the null hypothesis of randomness. The histogram, based on 1,000 random permutations, indicates the distribution of K-S statistics we would expect by chance. The red vertical line marks the observed K-S statistic (0.08), which lies in the upper tail of the distribution. This suggests that the observed difference in 'n_steps' between the two groups is larger than what would typically occur due to random variation alone. Consequently, there is evidence that the missingness in 'avg_rating' may be systematically related to the number of steps in a recipe, potentially violating the assumption of missing completely at random (MCAR).
+The empirical distribution of the Kolmogorov-Smirnov (K-S) statistic shown in the plot represents the expected variation in distributional differences between the 'n_steps' variable for recipes with and without missing 'avg_rating' values under the null hypothesis of randomness. The histogram, based on 1,000 random permutations, indicates the distribution of K-S statistics we would expect by chance. The red vertical line marks the observed K-S statistic (0.08), which lies in the upper tail of the distribution. This suggests that the observed difference in 'n_steps' between the two groups is larger than what would typically occur due to random variation alone. Consequently, there is evidence that the missingness in 'avg_rating' may be systematically related to the number of steps in a recipe, potentially violating the assumption of missing completely at random (MCAR). To show MAR, we might need data on something like recipe views to test whether missing ratings depend on visibility.
 
 ### Hypothesis Testing
 
@@ -228,13 +248,13 @@ The empirical distribution of the Kolmogorov-Smirnov (K-S) statistic shown in th
 
 **Test Statistic:** Mean ratings of recipes with ease indicator tags - mean ratings of recipes without ease indicator tags.
 
-**Significance Value:** 0.05
+**Significance Level:** 0.05
 
-**Result:** p-value = 0.008
+**Result:** p-value = 0.007
 
-We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. The ease indicator tags that we chose were the followng: 'easy', 'beginner', 'beginner-cook', '5-ingredients-or-less', '3-steps-or-less', '15-minutes-or-less', 'weeknight' because each of them was either the lowest '-or-less' tier or related to ease/beginner skill.
+We conducted a hypothesis test that looked at the relationship between the presence of an 'easy' tag and the average ratings. The ease indicator tags that we chose were the followng: 'easy', 'beginner', 'beginner-cook', '5-ingredients-or-less', '3-steps-or-less', '15-minutes-or-less', 'weeknight' because each of them was either the lowest '-or-less' tier or related to ease/beginner skill. These were selected by keyword search.
 
-Difference in group means was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.008 which is less than 0.05 so we reject our null hypothesis. There is significant statistical evidence to support a difference in average ratings between recipes with and without the ease 
+Difference in group means was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.008 which is less than 0.05, the most common significance level, so we reject our null hypothesis. There is significant statistical evidence to support a difference in average ratings between recipes with and without the ease-related tags.
 
 <iframe
   src="means.html"
@@ -243,12 +263,12 @@ Difference in group means was an appropriate test statistic because it quantifie
   frameborder="0"
 ></iframe>
 
-The histogram shows the range of mean differences expected by chance under the null hypothesis that there is no real difference in ratings between the two groups. The red vertical line represents the observed difference of 0.011, which lies in the far-right tail of the distribution. This indicates that the observed difference is larger than most differences generated under the null hypothesis.
+The histogram shows the range of mean differences expected by chance under the null hypothesis that there is no real difference in ratings between the two groups. The red vertical line represents the observed difference of 0.011, which lies in the far-right tail of the distribution. This indicates that the observed difference is larger than most (in the case of this specific permutation test, all) differences generated under the null hypothesis.
 
 
 ### Framing a Prediction Problem
 
-We are addressing a regression problem to predict recipe cooking length. We chose to predict minutes of cooking length because it seems that there are a lot of possible factors that could influence it. For our baseline model, we plan to use the three features: the number of steps, number of ingredients and average rating. We will pply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks.  
+We are addressing a regression problem to predict recipe cooking length. We chose to predict minutes of cooking length because it seems that there are a lot of possible factors that could influence it. For our baseline model, we plan to use the three features: the number of steps, number of ingredients and average rating. We will apply Linear Regression and evaluate the model using R², as it effectively measures how well the model explains the variance in cooking length, which is suitable for regression tasks.  
 
 
 ### Baseline Model
@@ -260,7 +280,7 @@ For our baseline model, we built two linear regression models to predict recipe 
 | `n_steps`       | Quantitative | Number of steps in the recipe                    |
 | `n_ingredients` | Quantitative | Number of ingredients used                       |
 
-No nominal or ordinal variables were included, so no encoding was necessary. However, for the multiple linear regression model, all quantitative features were converted into polynomial features using PolynomialFeatures from sklearn. This is because the regression plots show a non-linear relationship between minutes and our predictors/features.
+No nominal or ordinal variables were included, so no encoding was necessary. However, for the multiple linear regression model, all quantitative features were converted into polynomial features using PolynomialFeatures from sklearn. This is because the regression plots show a non-linear relationship between minutes and our predictors/features. For minutes, since there were a few outliers and the distribution of it did not look anything close to roughly normal, we used up to the 99th percentile and then log-transformed it to reduce skew. For our Test and Training split, we used 80% Train and 20% Test for a good balance of enough training and enough testing data.
 
 The following table displays the RMSE and R² Score from each of these models.
 
@@ -268,7 +288,7 @@ The following table displays the RMSE and R² Score from each of these models.
 | --------------------------------------------------------------------- | ------- | --------- |
 | Constant Baseline                                                     | 4020.64 | N/A       |
 | Simple Linear Regression (`n_steps`)                                  | 4020.53 | 0.000055  |
-| Multiple Linear Regression (`n_steps`, `n_ingredients`)               | 4020.24 | 0.0002817 |
+| Multiple Linear Regression (`n_steps`, `n_ingredients`)               | 4020.24 | 0.218     |
 
 The residual plot for the simple linear model is displayed below:
 <iframe
@@ -278,7 +298,7 @@ The residual plot for the simple linear model is displayed below:
   frameborder="0"
 ></iframe>
 
-No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Our plans for improving on the model include adding different transformations, including one-hot encodings for some speed keywords in the tags.
+Our Multiple Linear Regression baseline model produced a Train R² value of 0.215 and a Test R² value of 0.218. Therefore, no, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores; only about 22% of the variance can be explained. Our plans for improving on the model include adding different transformations, including one-hot encodings for some speed keywords in the tags.
 
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
 
@@ -311,19 +331,19 @@ We used a **Random Forest Regressor**, chosen for its ability to model nonlinear
 
 **Model Performance**
 
-The baseline model performance was:
+The original model performance was:
 
 - **Train R² = 0.837**
 - **Test R² = 0.126**
 
 This significant train–test gap indicated **overfitting**, where the model fit the training data well but failed to generalize to unseen examples.
 
-After incorporating engineered features and polynomial transformations, the final model improved:
+Using **GridSearchCV**, we finetuned the polyomial hyperparameters, 
 
-- **Test R² ≈ 0.264**
-- **MAE ≈ 0.7 minutes**
+- Best Parameters: {'poly_features__degree': 2, 'poly_features__interaction_only': False}
+- **Test R² ≈ 0.274**
 
-This reflects more than a twofold improvement in generalization (R²) and a reduction in average prediction error. These results support our intuition that features reflecting recipe complexity, structure, and context contribute meaningfully to more accurate cooking time predictions.
+This reflects more than a twofold improvement in generalization (R²) and a reduction in average prediction error after hyperparameter finetuning. These results support our intuition that features reflecting recipe complexity, structure, and context contribute meaningfully to more accurate cooking time predictions.
 
 ### Fairness Analysis
 
@@ -347,7 +367,7 @@ We aim to assess whether the model performs equally well for both short and long
 - **Alternative Hypothesis (H₁):** There is a significant difference in R² performance between Group X and Group Y.
 
 **Test Statistic:** the difference in R² scores between the two groups: **ΔR² = 0.241 − 0.136 = 0.105**
-This positive difference indicates that the model performs substantially better on short recipes than on long ones.
+This positive difference indicates that the model performs substantially better on short recipes than on long ones at the current distribution.
 
 **Testing Procedure**
 
@@ -356,10 +376,9 @@ To assess the significance of the observed difference, we used a **permutation t
 - For each shuffle, we re-calculated the difference in R² scores between the pseudo-groups.
 - We then compared the observed difference to this null distribution.
 
-
 **Significance Level**
 
-We used a significance level of **0.05** is to evaluate the p-value.
+We used a significance level of **0.05** to evaluate the p-value.
 - The resulting **p-value = 0.00**, indicating that the observed difference is highly unlikely to have occurred by chance.
 
 **Conclusion**
