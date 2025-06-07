@@ -287,6 +287,7 @@ Overall, while the model offers a basic start, its performance metrics indicate 
 ### Final Model
 
 To improve prediction of recipe preparation time, We created several new features based on domain knowledge and patterns in the data:
+
 | Feature Name         | Type         | Description                                                                 |
 |----------------------|--------------|-----------------------------------------------------------------------------|
 | `is_easy`            | Binary       | Indicates whether a recipe is tagged as "easy" based on common tag labels. |
