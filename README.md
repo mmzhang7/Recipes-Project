@@ -20,7 +20,7 @@ From the recipes dataset:
 - **`tags`**: Food.com tags for each recipe (e.g., "easy", "vegan", "holiday").
 - **`n_steps`**: Number of steps in the recipe's instructions.
 - **`steps`**: Text for each step of the recipe, in order.
-- **`ingredients`** *(inferred from data)*: A list of ingredients used in the recipe.
+- **`ingredients`**: A list of ingredients used in the recipe.
 - **`description`**: User-provided description or blurb about the recipe.
 
 From the ratings dataset:
