@@ -35,7 +35,7 @@ We derived an additional feature:
 This dataset is particularly valuable to readers interested in food, time management, and data-driven cooking recommendations. By understanding which recipe features are most strongly associated with preparation time, we can help users make more informed choices about what to cook based on their time constraints and preferences.
 
 
-### Data Cleaning and Exploratory Data Analysis
+#### Data Cleaning and Exploratory Data Analysis
 
 **Data Cleaning**
 
@@ -49,7 +49,7 @@ The first cleaning step involved addressing inconsistencies in the ratings data.
 
 ---
 
-### 2. Splitting the `nutrition` Column into Separate Features
+#### 2. Splitting the `nutrition` Column into Separate Features
 
 The `nutrition` column originally stored nutritional data as a single string in the format: [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]
 This format limited our ability to analyze or model individual nutritional components. To address this, we created a function that parsed the string and extracted each value into its own numeric column. We added the following new columns:
@@ -66,7 +66,7 @@ This format limited our ability to analyze or model individual nutritional compo
 
 ---
 
-### 3. Parsing List-Formatted Strings into Actual Python Lists
+#### 3. Parsing List-Formatted Strings into Actual Python Lists
 
 The `tags`, `steps`, and `ingredients` columns were stored as strings that resembled Python lists (e.g., `"['easy', 'vegan']"`). These needed to be converted into actual list objects to support proper manipulation and analysis.
 
@@ -84,7 +84,7 @@ We applied this function to the following columns:
 
 ---
 
-### Final Cleaned Data Preview
+#### Final Cleaned Data Preview
 
 Below is a preview of the cleaned dataset (`recipes.head()`), including the processed columns:
 
