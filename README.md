@@ -286,7 +286,9 @@ Overall, while the model offers a basic start, its performance metrics indicate 
 
 ### Final Model
 
-To improve prediction of recipe preparation time, We created several new features based on domain knowledge and patterns in the data:
+**Feature Engineering and Rationale**
+
+Several custom features were engineered to better capture meaningful characteristics of the recipes for predicting preparation time:
 
 | Feature Name         | Type         | Description                                                                 |
 |----------------------|--------------|-----------------------------------------------------------------------------|
@@ -295,14 +297,18 @@ To improve prediction of recipe preparation time, We created several new feature
 | `desc_length`        | Quantitative | Number of words in the recipe description, indicating instructional depth.  |
 | `meal_type`          | Nominal      | Meal category (e.g., breakfast, lunch) extracted from tags.                 |
 
+These features relate directly to the recipe’s nature and complexity, which intuitively should impact cooking time and improve the model’s predictive ability.
 
-We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is (e.g., “freshly grated parmesan” vs. “cheese”). `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
+**Model Selection and Hyperparameter Tuning**
 
-These features align with the data-generating process: recipe time is likely influenced by the recipe’s intended difficulty, type, and complexity of instructions and ingredients.
+A Random Forest Regressor was selected for its ability to handle nonlinear relationships and mixed feature types robustly. Initially, a baseline Random Forest model showed a strong fit on training data (Train R² = 0.837) but poor generalization on the test set (Test R² = 0.126), indicating potential overfitting.
 
-The modeling algorithm used was a Random Forest Regressor, selected for its ability to model non-linear relationships, handle mixed feature types, and provide robustness against overfitting.
+To improve this, hyperparameter tuning was performed using both Grid Search and Randomized Search. Grid Search explored combinations of `n_estimators` (1000, 5000), `max_depth` (10, 15), and `max_features` ('sqrt'). The best parameters found were `n_estimators=5000`, `max_depth=10`, and `max_features='sqrt'`, improving the test R² to 0.264, more than doubling the baseline test performance.
 
-Hyperparameter tuning was conducted in two phases:
+Subsequently, a Randomized Search over a wider hyperparameter space including `min_samples_leaf` and additional options for `max_features` further optimized the model with MAE as the evaluation metric. This approach balanced model complexity and generalization better than the baseline.
 
-Grid Search was first performed over combinations of `n_estimators` (1000, 5000), `max_depth` (10, 15), and `max_features` ('sqrt'). The best result from this phase had 1000 trees, a max depth of 15, and used the square root of the number of features at each split.
+**Performance Summary**
+
+The final tuned Random Forest model significantly improved test performance (Test R² ≈ 0.264 vs. baseline 0.126) and lowered prediction error (MAE ≈ 0.7 minutes). This confirms that the combination of thoughtfully engineered features representing recipe simplicity, ingredient complexity, descriptive detail, and meal category, along with careful hyperparameter tuning, enhanced the model’s ability to generalize beyond the training data.
+
 ### Fairness Analysis
