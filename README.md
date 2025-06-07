@@ -278,7 +278,6 @@ The residual plot for the simple linear model is displayed below:
   frameborder="0"
 ></iframe>
 
-We next try to use polynomial features on the `n_steps` and `n_ingredients` columns
 No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores (only about 22% of variance is explained. However, we do have a roughly equal train and test R². Our plans for improving on the model include adding different transformations, including one-hot vector encodings for some speed keywords in the tags.
 
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
