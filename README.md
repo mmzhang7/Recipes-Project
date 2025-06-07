@@ -212,7 +212,7 @@ We selected protein content as a likely independent variable because:
 The likelihood of a rating being missing appears to depend on recipe complexity (n_steps), but not on nutritional content (protein_PDV). This implies that unobserved factors like user engagement, recipe appeal, or difficulty may drive the missingness, and collecting metadata such as views, saves, or image presence could help model it better.
 
 <iframe
-  src="n_steps_ks.html"
+  src="ks.html"
   width="600"
   height="600"
   frameborder="0"
@@ -237,7 +237,7 @@ We conducted a hypothesis test that looked at the relationship between the prese
 Difference in group means was an appropriate test statistic because it quantifies the strength of association between a binary tag variable and a continuous rating variable. Our resulting p-value was 0.008 which is less than 0.05 so we reject our null hypothesis. There is significant statistical evidence to support a difference in average ratings between recipes with and without the ease 
 
 <iframe
-  src="hypothesis_test.html"
+  src="means.html"
   width="600"
   height="600"
   frameborder="0"
@@ -271,15 +271,15 @@ The following table displays the RMSE and R^2 Score from each of these models.
 | Simple Linear Regression (`n_steps`)                                  | 4402.53 | 0.000055  |
 | Multiple Linear Regression (`n_steps`, `n_ingredients`, `avg_rating`) | 4402.34 | 0.0002817 |
 
-The residual plot for the simple libnear model is displayed below:
+The residual plot for the simple linear model is displayed below:
 <iframe
-  src="residual_plot.html"
+  src="regression.html"
   width="600"
   height="600"
   frameborder="0"
 ></iframe>
 
-No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Additionally, a residual plot of the simple linear model reveals residuals increasing for recipes with longer predicted times—suggesting a poor model fit. Our plans for improving on the model include using tf-idf for speed words in the description and/or one-hot vector encodings for some speed keywords in the tags.
+No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Our plans for improving on the model include using tf-idf for speed words in the description and/or one-hot vector encodings for some speed keywords in the tags.
 
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
 
