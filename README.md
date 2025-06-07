@@ -309,6 +309,6 @@ Subsequently, a Randomized Search over a wider hyperparameter space including `m
 
 **Performance Summary**
 
-The final tuned Random Forest model significantly improved test performance (Test R² ≈ 0.264 vs. baseline 0.126) and lowered prediction error (MAE ≈ 0.7 minutes). This confirms that the combination of thoughtfully engineered features representing recipe simplicity, ingredient complexity, descriptive detail, and meal category, along with careful hyperparameter tuning, enhanced the model’s ability to generalize beyond the training data.
+The final tuned Random Forest model significantly improved test performance (Test R² ≈ 0.264 vs. baseline 0.126) and lowered prediction error (MAE ≈ 0.7 minutes). This confirms that the combination of engineered features representing recipe simplicity, ingredient complexity, descriptive detail, and meal category, along with careful hyperparameter tuning, enhanced the model’s ability to generalize beyond the training data.
 
 ### Fairness Analysis
