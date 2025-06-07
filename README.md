@@ -253,23 +253,22 @@ We are addressing a regression problem to predict recipe cooking length. We chos
 
 ### Baseline Model
 
-For our baseline model, we built two linear regression models to predict recipe preparation time (measured in minutes) and compared them to a constant model. Our Simple Linear Regression Model used a single predictor (n_steps) and our Multiple Linear Regression Model used three predictors (n_steps, n_ingredients and avg_rating).
+For our baseline model, we built two linear regression models to predict recipe preparation time (measured in minutes) and compared them to a constant model. Our Simple Linear Regression Model used a single predictor (n_steps) and our Multiple Linear Regression Model used two predictors (n_steps and n_ingredients).
 
 | Feature         | Type         | Description                                      |
 | --------------- | ------------ | ------------------------------------------------ |
 | `n_steps`       | Quantitative | Number of steps in the recipe                    |
 | `n_ingredients` | Quantitative | Number of ingredients used                       |
-| `avg_rating`    | Quantitative | Average rating of the recipe (from user reviews) |
 
-No nominal or ordinal variables were included, so no encoding was necessary. However, for the multiple linear regression model, all quantitative features were standardized using StandardScaler from sklearn to ensure comparability.
+No nominal or ordinal variables were included, so no encoding was necessary. However, for the multiple linear regression model, all quantitative features were converted into polynomial features using PolynomialFeatures from sklearn. This is because the regression plots show a non-linear relationship between minutes and our predictors/features.
 
-The following table displays the RMSE and R^2 Score from each of these models.
+The following table displays the RMSE and R² Score from each of these models.
 
 | Model Type                                                            | RMSE    | R² Score  |
 | --------------------------------------------------------------------- | ------- | --------- |
-| Constant Baseline                                                     | 4402.64 | N/A       |
-| Simple Linear Regression (`n_steps`)                                  | 4402.53 | 0.000055  |
-| Multiple Linear Regression (`n_steps`, `n_ingredients`, `avg_rating`) | 4402.34 | 0.0002817 |
+| Constant Baseline                                                     | 4020.64 | N/A       |
+| Simple Linear Regression (`n_steps`)                                  | 4020.53 | 0.000055  |
+| Multiple Linear Regression (`n_steps`, `n_ingredients`)               | 4020.24 | 0.0002817 |
 
 The residual plot for the simple linear model is displayed below:
 <iframe
@@ -279,7 +278,8 @@ The residual plot for the simple linear model is displayed below:
   frameborder="0"
 ></iframe>
 
-No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores. Our plans for improving on the model include using tf-idf for speed words in the description and/or one-hot vector encodings for some speed keywords in the tags.
+We next try to use polynomial features on the `n_steps` and `n_ingredients` columns
+No, we do not believe the current model is a “good” one. While it was implemented correctly and meets the assumptions of linear regression on the surface, its predictive power is extremely low. The features used explain almost none of the variation in cooking time, as reflected in the very low R² scores (only about 22% of variance is explained. However, we do have a roughly equal train and test R². Our plans for improving on the model include adding different transformations, including one-hot vector encodings for some speed keywords in the tags.
 
 Overall, while the model offers a basic start, its performance metrics indicate that it is not suitable for making accurate predictions in its current form.
 
