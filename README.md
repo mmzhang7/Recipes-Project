@@ -299,16 +299,80 @@ Several custom features were engineered to better capture meaningful characteris
 
 These features relate directly to the recipe’s nature and complexity, which intuitively should impact cooking time and improve the model’s predictive ability.
 
-**Model Selection and Hyperparameter Tuning**
+We also included a polynomial transformation (degree=2) on `n_ingredients` and `n_steps` to capture potential nonlinear effects and interactions between these core numeric variables.
 
-A Random Forest Regressor was selected for its ability to handle nonlinear relationships and mixed feature types robustly. Initially, a baseline Random Forest model showed a strong fit on training data (Train R² = 0.837) but poor generalization on the test set (Test R² = 0.126), indicating potential overfitting.
+**Modeling Approach and Pipeline**
 
-We chose these features because we believe that `is_easy` may reflect shorter recipes with fewer steps or simpler methods `avg_ingredient_len` captures how elaborate each ingredient is. `desc_length` correlates with complexity: detailed recipes often require more time. `meal_type` captures context: dinner recipes tend to take longer than snacks or breakfast.
+We used a **Random Forest Regressor**, chosen for its ability to model nonlinear relationships, handle both numeric and categorical variables, and provide strong performance with minimal tuning. The model was implemented within a `Pipeline` that included:
 
-Subsequently, a Randomized Search over a wider hyperparameter space including `min_samples_leaf` and additional options for `max_features` further optimized the model with MAE as the evaluation metric. This approach balanced model complexity and generalization better than the baseline.
+- Custom feature engineering using `FunctionTransformer`s to compute `is_easy`, `avg_ingredient_len`, `desc_length`, and `meal_type`,
+- Polynomial expansion of `n_ingredients` and `n_steps` to capture interaction effects,
+- One-hot encoding of categorical features like `meal_type`,
+- A final `RandomForestRegressor()` using default hyperparameters.
 
-**Performance Summary**
+**Model Performance**
 
-The final tuned Random Forest model significantly improved test performance (Test R² ≈ 0.264 vs. baseline 0.126) and lowered prediction error (MAE ≈ 0.7 minutes). This confirms that the combination of engineered features representing recipe simplicity, ingredient complexity, descriptive detail, and meal category, along with careful hyperparameter tuning, enhanced the model’s ability to generalize beyond the training data.
+The baseline model performance was:
+
+- **Train R² = 0.837**
+- **Test R² = 0.126**
+
+This significant train–test gap indicated **overfitting**, where the model fit the training data well but failed to generalize to unseen examples.
+
+After incorporating engineered features and polynomial transformations, the final model improved:
+
+- **Test R² ≈ 0.264**
+- **MAE ≈ 0.7 minutes**
+
+This reflects more than a twofold improvement in generalization (R²) and a reduction in average prediction error. These results support our intuition that features reflecting recipe complexity, structure, and context contribute meaningfully to more accurate cooking time predictions.
 
 ### Fairness Analysis
+
+**Group Definitions**
+
+Recipes are divided into two groups based on the number of ingredients:
+- **Group X (Short Recipes):** Recipes with fewer than 8 ingredients.
+- **Group Y (Long Recipes):** Recipes with 8 or more ingredients.
+
+This threshold was chosen as a simple, interpretable cutoff to examine whether model performance differs based on recipe complexity.
+
+**Evaluation Metric**
+
+The evaluation metric used to compare model performance across groups is the **R² score**. This metric measures the proportion of variance in the target variable (`minutes`) that is predictable from the input features.
+
+**Hypotheses**
+
+We aim to assess whether the model performs equally well for both short and long recipes. To do this, we frame the following hypotheses:
+
+- **Null Hypothesis (H₀):** There is no difference in R² performance between Group X and Group Y. Any observed difference is due to chance.
+- **Alternative Hypothesis (H₁):** There is a significant difference in R² performance between Group X and Group Y.
+
+**Test Statistic:** the difference in R² scores between the two groups: **ΔR² = 0.241 − 0.136 = 0.105**
+This positive difference indicates that the model performs substantially better on short recipes than on long ones.
+
+**Testing Procedure**
+
+To assess the significance of the observed difference, we used a **permutation test**:
+- We shuffled the group labels (short vs. long) 500 times while keeping the features and targets fixed.
+- For each shuffle, we re-calculated the difference in R² scores between the pseudo-groups.
+- We then compared the observed difference to this null distribution.
+
+
+**Significance Level**
+
+We used a significance level of **0.05** is to evaluate the p-value.
+- The resulting **p-value = 0.00**, indicating that the observed difference is highly unlikely to have occurred by chance.
+
+**Conclusion**
+
+Since the **p-value (0.00) < α (0.05)**, we **reject the null hypothesis**.  
+This provides strong evidence that the model performs significantly better on short recipes than on long recipes, highlighting a potential **fairness concern** in model performance across recipe complexity.
+
+The histogram below shows the empirical distribution of the difference in R² scores between short and long recipes under the null hypothesis, generated via permutation testing. Most of the simulated differences cluster tightly around zero, indicating that under random group assignments, the R² difference is typically very small. The observed difference of 0.105, marked by the red vertical line, lies far to the right of this distribution. This separation suggests that the observed performance gap is highly unlikely to have occurred by chance, providing strong evidence that the model genuinely performs better on short recipes than long ones.
+
+<iframe
+  src="r^2 distribution for fairness.html"
+  width="600"
+  height="600"
+  frameborder="0"
+></iframe>
