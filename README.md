@@ -1,3 +1,5 @@
+# Culinary Computing
+
 ## By: Amber Tang and Maggie Zhang
 
 ### Introduction
