@@ -1,4 +1,4 @@
-## Names: Amber Tang and Maggie Zhang
+## By: Amber Tang and Maggie Zhang
 
 ### Introduction
 
