@@ -1,5 +1,3 @@
-# Culinary Computing
-## Recipe Analysis and Prediction through Data Science and Machine Learning
 ## Names: Amber Tang and Maggie Zhang
 
 ### Introduction
